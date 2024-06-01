@@ -1,20 +1,17 @@
 package ru.rsue.marushko.bookdepository;
 
-import static ru.rsue.marushko.bookdepository.R.id.book_recycler_view;
-
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.List;
+import static ru.rsue.marushko.bookdepository.R.id.book_recycler_view;
 
 public class BookListFragment extends Fragment {
     private RecyclerView mBookRecyclerView;
@@ -27,11 +24,24 @@ public class BookListFragment extends Fragment {
         updateUI();
         return view;
     }
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        updateUI();
+    }
     private void updateUI() {
         BookLab bookLab = BookLab.get(getActivity());
         List<Book> books = bookLab.getBooks();
-        mAdapter = new BookAdapter(books) ;
-        mBookRecyclerView.setAdapter(mAdapter);
+        if (mAdapter == null){
+
+
+            mAdapter = new BookAdapter(books) ;
+            mBookRecyclerView.setAdapter(mAdapter);
+        }
+        else{
+            mAdapter.notifyDataSetChanged();
+        }
     }
     private class BookHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private Book mBook;
@@ -54,8 +64,8 @@ public class BookListFragment extends Fragment {
             mReadedCheckBox.setChecked(mBook.isReaded());
         }
         public void onClick (View v){
-            Toast.makeText(getActivity(), mBook.getTitle() + " clicked!", Toast.LENGTH_SHORT)
-                    .show();
+            Intent intent = BookActivity.newIntent(getActivity(), mBook.getId());
+            startActivity(intent);
         }
 
     }
